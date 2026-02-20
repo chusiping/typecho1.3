@@ -2,6 +2,44 @@
 require 'vendor/autoload.php';
 use Meilisearch\Client;
 
+//实现多个匹配片段显示
+function buildMultiFragments($content, $matches, $keyword, $radius = 30)
+{
+    if (empty($matches)) {
+        return mb_substr(strip_tags($content), 0, 120) . '...';
+    }
+    $cleanContent = strip_tags($content);
+    $fragments = [];
+    $usedRanges = [];
+
+    foreach ($matches as $match) {
+        $start = max(0, $match['start'] - $radius);
+        $end   = $match['start'] + $match['length'] + $radius;
+        // 避免重复片段
+        foreach ($usedRanges as $range) {
+            if ($start <= $range[1] && $end >= $range[0]) {
+                continue 2;
+            }
+        }
+        $usedRanges[] = [$start, $end];
+        $length = $end - $start;
+        $fragment = mb_strcut($cleanContent, $start, $length);
+        // 高亮关键词（支持多个）
+        $words = explode(' ', trim($keyword, '"'));
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                $fragment = str_replace(
+                    $word,
+                    '<span class="search-highlight">' . $word . '</span>',
+                    $fragment
+                );
+            }
+        }
+        $fragments[] = '...' . $fragment . '...';
+    }
+    return implode('<br>', $fragments);
+}
+
 // =======================
 // Meilisearch 配置
 // =======================
@@ -19,25 +57,20 @@ $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 $hits = [];
 $total = 0;
+if (mb_strlen($keyword) <= 4) {
+    $keyword = '"' . $keyword . '"';
+}
+
 
 if ($keyword !== '') {
     try {
-/*         $results = $index->search($keyword, [
-			'matchingStrategy' => 'all',      // 所有词必须匹配
-			'attributesToSearchOn' => ['title', 'content'], // 限定字段
-			'limit' => 50
-		]); 
-*/
-		
 		$results = $index->search($keyword, [
+            'matchingStrategy' => 'all',
 			'attributesToHighlight' => ['title', 'content'],
-			'attributesToCrop' => ['content'],
+			// 'attributesToCrop' => ['content'],
 			'cropLength' => 40,   // 前后大约20个字
-			'highlightPreTag' => '<span style="color:red">',
-			'highlightPostTag' => '</span>',
 			'showMatchesPosition' => true
 		]);
-		
         $hits = $results->getHits();                   // 获取搜索结果数组
         $total = $results->getEstimatedTotalHits();   // 获取总匹配数
     } catch (\Meilisearch\Exceptions\ApiException $e) {
@@ -52,6 +85,10 @@ if ($keyword !== '') {
     <meta charset="UTF-8">
     <title>Typecho 搜索</title>
     <style>
+        .search-highlight {
+            color: #d63638;
+            font-weight: bold;
+        }
         /* 全局基调：黑底白字，字体调小 */
         body {
             background-color: black;
@@ -151,21 +188,25 @@ if ($keyword !== '') {
         <p>未找到匹配文章。</p>
     <?php else: ?>
         <p>总匹配：<?php echo $total; ?> 篇文章</p>
-
 		<?php foreach ($hits as $hit): ?>
-			<div class="result">
-				<div class="title">
-					<a href="http://test.qy:8001/typecho/index.php/archives/<?php echo $hit['id']; ?>/" target="_blank">
-						<?php echo $hit['_formatted']['title']; ?>
-					</a>
-				</div>
-
-				<div class="content">
-					<?php echo $hit['_formatted']['content']; ?>...
-				</div>
-			</div>
-		<?php endforeach; ?>
-
+            <div class="result">
+                <div class="title">
+                    <a href="http://test.qy:8001/typecho/index.php/archives/<?php echo $hit['id']; ?>/" target="_blank">
+                        <?php echo $hit['_formatted']['title']; ?>
+                    </a>
+                </div>
+                <div class="content">
+                    <?php
+                        $content = $hit['content'];
+                        $matches = [];
+                        if (isset($hit['_matchesPosition']['content'])) {
+                            $matches = $hit['_matchesPosition']['content'];
+                        }
+                        echo buildMultiFragments($content, $matches, $keyword, 100);
+                    ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
     <?php endif; ?>
 </body>
 </html>
