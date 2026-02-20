@@ -24,7 +24,7 @@ $this->need('comments.php'); ?>
 <?php
 // 如果不是单栏模式，加载侧边栏
 if (!$this->options->OneCOL):
-    $this->need('sidebar.php');
+    // $this->need('sidebar.php');
 endif; ?>
 
 <?php // 加载页面底部

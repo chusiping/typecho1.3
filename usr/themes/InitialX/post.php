@@ -104,7 +104,7 @@ if (!empty($this->options->Breadcrumbs) && in_array('Postshow', $this->options->
 <?php
 // 如果不是单栏模式，加载侧边栏
 if (!$this->options->OneCOL):
-    $this->need('sidebar.php');
+    // $this->need('sidebar.php');edit by jarry 2026-2-20 只显示文章内容
 endif; ?>
 
 <?php // 加载页面底部

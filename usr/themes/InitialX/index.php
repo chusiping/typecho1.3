@@ -53,6 +53,6 @@ if ($this->_currentPage == 1 && !empty($this->options->ShowWhisper) && in_array(
 <?php $this->pageNav('上一页', $this->options->AjaxLoad ? '查看更多' : '下一页', 0, '..', $this->options->AjaxLoad ? array('wrapClass' => $this->options->AjaxLoad == 'auto' ? 'page-navigator ajaxload auto' : 'page-navigator ajaxload') : ''); ?>
     </div>
 <?php if (!$this->options->OneCOL):
-    $this->need('sidebar.php');
+    // $this->need('sidebar.php');
 endif; ?>
 <?php $this->need('footer.php'); ?>
