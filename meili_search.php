@@ -51,26 +51,41 @@ if ($keyword !== '') {
 <head>
     <meta charset="UTF-8">
     <title>Typecho 搜索</title>
-<style>
+    <style>
         /* 全局基调：黑底白字，字体调小 */
         body {
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
-            /* 相对于原样式的30px外边距不变，但整体字体基调缩小 */
             margin: 30px;
-            /* 基础字体调小——原来依赖浏览器默认（通常是16px），现在设小一点 */
-            font-size: 13px;          /* 整体调小，同时保持相对单位方便缩放 */
+            font-size: 13px;
         }
 
-        /* 输入框和按钮：为了在黑底上看得清，给输入框浅色背景+黑字，按钮也适配 */
+        /* ---------- 链接强制白色（覆盖默认蓝色） ---------- */
+        a {
+            color: white;                  /* 默认链接白色 */
+            text-decoration: underline;    /* 保留下划线清晰可辨，也可去除，这里选择保留但颜色白 */
+            background-color: transparent; 
+        }
+        a:visited {
+            color: #f0f0f0;                /* 访问后仍保持浅白，不出现紫色 */
+        }
+        a:hover {
+            color: #ccc;                    /* 悬停变浅灰，给一点反馈 */
+            text-decoration: underline;
+        }
+        a:active {
+            color: #aaa;                    /* 激活时稍深一点 */
+        }
+
+        /* 输入框和按钮：深色底白字 */
         input[type=text] {
             width: 300px;
             padding: 5px;
-            background-color: #333;     /* 深灰底，与黑底融合但可辨识 */
-            color: white;               /* 白字 */
+            background-color: #333;
+            color: white;
             border: 1px solid #666;
-            font-size: 0.9rem;          /* 稍微控制大小，比全局稍小一点也协调 */
+            font-size: 0.9rem;
         }
 
         input[type=submit] {
@@ -81,38 +96,44 @@ if ($keyword !== '') {
             font-size: 0.9rem;
             cursor: pointer;
         }
-        /* 悬停效果增加一点交互反馈 */
         input[type=submit]:hover {
             background-color: #3a3a3a;
         }
 
-        /* 结果区块：边框用浅灰避免刺眼，下边框也是浅灰 */
+        /* 结果区块 */
         .result {
             margin-bottom: 20px;
-            border-bottom: 1px solid #444;   /* 原 #ddd 太亮，换成深色系灰 */
+            border-bottom: 1px solid #444;
             padding-bottom: 10px;
         }
 
-        /* 标题：白字，稍微加一点强调但仍旧小 */
+        /* 标题 */
         .title {
-            font-size: 15px;          /* 原18px → 15px 调小 */
-            font-weight: bold;
+            font-size: 13px;
             color: white;
         }
 
-        /* 内容文字：浅灰色（柔和白），尺寸更小一点 */
+        /* 内容文字 */
         .content {
-            font-size: 12px;          /* 原14px → 12px 更小 */
-            color: #ddd;               /* 柔白，不刺眼 */
+            font-size: 12px;
+            color: #ddd;
         }
 
-        /* 为了演示更丰富，加一小段辅助说明字体都调小了 */
+        /* 辅助说明 */
         .note {
             font-size: 11px;
             color: #aaa;
             margin-top: 20px;
             border-top: 1px dotted #333;
             padding-top: 8px;
+        }
+
+        /* 为了演示链接样式，额外添加一个链接容器 */
+        .link-row {
+            margin: 15px 0;
+        }
+        .link-row a {
+            margin-right: 20px;
         }
     </style>
 </head>
