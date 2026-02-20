@@ -1,0 +1,72 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>zxg</title>
+    <script type="text/javascript" src="https://js.jrjimg.cn/lib/jquery-1.7.min.js"></script>
+    <base target="_blank"/>
+</head>
+<body>
+
+
+<style type="text/css">  
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    background: #F6F6F3;
+    color: #444;
+    font-size: 87.5%;
+    line-height: 1.5;
+}
+</style>
+<div class="boxbfb MostOne" id="tab_sw">
+        <div class="tab-inner" id="tab03" style="display:block;">
+            <div>			
+				<div id="edit_code_bk" style="display: inline-block;">
+                    <div>
+                        <input id="kword" type="text" class="text-l">
+                        <button id="btn_savebk" class="primary btn" type="button" onclick="seek(list);">搜索</button>
+                    </div>
+                </div>
+                <div id="copyCode" style="text-align:left;margin-left: 30px;"></div>
+                <div id="dv_bk2" class="masonry">
+                </div>
+			</div>
+        </div>
+        <div id="main" style="width: 800px;"></div>
+</div>
+<!-- <script type="text/javascript" src="lib.js"></script> -->
+<!-- <script type="text/javascript" src="../skin1/jscss/browser.js"></script> -->
+<script language="JavaScript"> 
+    let template = `
+    <article class="post">
+            <a href="/index.php/archives/687/?key=中医" target="_blank">_title_</a>　　
+        <div style="display: inline-block;;"><a href="/index.php/archives/687/?key=中医" target="_blank">_date_</a></div>
+        <div class="post_content">_text_</div>
+	</article><hr>`;
+    let gerHtml = (data) => {
+        str = template;
+        str = str.replace('_cid_',data.cid);
+        str = str.replace('_title_',data.title);
+        str = str.replace('_text_',data.text);
+        str = str.replace('_date_',data.date);
+        return str;
+    }
+    function seek(callback)
+    {
+        var kword = $("#kword").val(); 
+        $.get("api_typecho.php?kword="+kword, function(result){ 
+            callback(result)
+        });  
+    }
+    let list = (data)=>{
+        _data = JSON.parse(data)
+        let rt = '';
+        $.each(_data, function(i, item) { 
+            rt += gerHtml(item);        
+            console.log(item);
+        });
+        $("#main").html(rt); 
+    }
+</script>
+</body>
+</html>    
+

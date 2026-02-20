@@ -1,0 +1,7 @@
+root
+├── conf.d
+│   └── php.conf
+├── md__docker-auto.sh
+└── www
+	└── typecho
+		└── php.conf
